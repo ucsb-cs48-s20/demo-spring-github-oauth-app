@@ -13,15 +13,15 @@ public class Admin {
     private long id;
 
     @NotBlank
-    private String email;
+    private String login;
 
     private boolean isPermanent = false;
 
     public Admin() {
     }
 
-    public Admin(String email, boolean isPermanent) {
-        this.email = email;
+    public Admin(String login, boolean isPermanent) {
+        this.login = login;
         this.isPermanent = isPermanent;
     }
 
@@ -29,16 +29,16 @@ public class Admin {
         this.id = id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public long getId() {
         return id;
     }
 
-    public String getEmail() {
-        return email;
+    public String getLogin() {
+        return login;
     }
 
     public boolean getIsPermanent() {

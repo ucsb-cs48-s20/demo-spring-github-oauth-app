@@ -60,14 +60,14 @@ public class AppUsersController {
             redirAttrs.addFlashAttribute("alertDanger", "User with that id does not exist.");
         } else {
             AppUser appUser = optionalAppUser.get();
-            String email = appUser.getEmail();
-            String curEmail = ms.email(token);
+            String login = appUser.getLogin();
+            String curLogin = ms.login(token);
 
-            if (email.equals(curEmail)) {
+            if (login.equals(curLogin)) {
                 redirAttrs.addFlashAttribute("alertDanger", "Cannot delete the current user");
             } else {
                 appUserRepository.delete(appUser);
-                redirAttrs.addFlashAttribute("alertSuccess", "User " + email + "successfully deleted.");
+                redirAttrs.addFlashAttribute("alertSuccess", "User " + login + "successfully deleted.");
             }
         }
         model.addAttribute("users", appUserRepository.findAll());

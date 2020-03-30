@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.ucsb.cs48.s20.demo.services.MembershipService;
-import edu.ucsb.cs48.s20.demo.services.ValidEmailService;
+import edu.ucsb.cs48.s20.demo.services.ValidLoginService;
 import edu.ucsb.cs48.s20.demo.entities.Admin;
 import edu.ucsb.cs48.s20.demo.repositories.AdminRepository;
 import java.util.Optional;
@@ -65,9 +65,9 @@ public class AdminController {
         if (!admin.isPresent()) {
             redirAttrs.addFlashAttribute("alertDanger", "Admin with that id does not exist.");
         } else {
-            String email = admin.get().getEmail();
-            if (ms.getAdminEmails().contains(email)) {
-                redirAttrs.addFlashAttribute("alertDanger", "Admin " + email + " was set from application properties and cannot be deleted.");    
+            String login = admin.get().getLogin();
+            if (ms.getAdminLogins().contains(login)) {
+                redirAttrs.addFlashAttribute("alertDanger", "Admin " + login + " was set from application properties and cannot be deleted.");    
             } else {
                 adminRepository.delete(admin.get());
                 redirAttrs.addFlashAttribute("alertSuccess", "Admin successfully deleted.");    
@@ -89,14 +89,14 @@ public class AdminController {
         }
 
         boolean errors = false;
-        if (!ValidEmailService.validEmail(admin.getEmail())) {
+        if (!ValidLoginService.validLogin(admin.getLogin())) {
             errors = true;
             redirAttrs.addFlashAttribute("alertDanger", "Invalid email.");
         }
-        List<Admin> alreadyExistingAdmins = adminRepository.findByEmail(admin.getEmail());
+        List<Admin> alreadyExistingAdmins = adminRepository.findByLogin(admin.getLogin());
         if (!alreadyExistingAdmins.isEmpty()) {
             errors = true;
-            redirAttrs.addFlashAttribute("alertDanger", "An admin with that email already exists.");
+            redirAttrs.addFlashAttribute("alertDanger", "An admin with that login already exists.");
         }
         if (!errors) {
             adminRepository.save(admin);
@@ -109,9 +109,9 @@ public class AdminController {
     }
 
     private void addAdminsFromPropertiesFile() {
-        ms.getAdminEmails().forEach((email) -> {
-            if (adminRepository.findByEmail(email).isEmpty()) {
-                adminRepository.save(new Admin(email, true));
+        ms.getAdminLogins().forEach((login) -> {
+            if (adminRepository.findByLogin(login).isEmpty()) {
+                adminRepository.save(new Admin(login, true));
             }
         });
     }
