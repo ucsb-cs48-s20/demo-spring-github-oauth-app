@@ -39,14 +39,10 @@ public interface MembershipService {
         return "Guest";
     }
 
-    public List<String> getAdminEmails();
+    public List<String> getAdminLogins();
 
-    public String name(OAuth2AuthenticationToken oAuth2AuthenticationToken);
+    public String uid(OAuth2AuthenticationToken token);
 
-    public String firstName(OAuth2AuthenticationToken oAuth2AuthenticationToken);
-
-    public String lastName(OAuth2AuthenticationToken oAuth2AuthenticationToken);
-
-    public String email(OAuth2AuthenticationToken oAuth2AuthenticationToken);
+    public String login(OAuth2AuthenticationToken token);
 
 }

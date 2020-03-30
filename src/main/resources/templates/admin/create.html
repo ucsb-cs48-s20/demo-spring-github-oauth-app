@@ -21,14 +21,14 @@
         <thead>
           <tr>
             <th>id</th>
-            <th>Email</th>
+            <th>login</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr th:each="a: ${admins}">
             <td th:text="${a.id}"></td>
-            <td th:text="${a.email}"></td>
+            <td th:text="${a.login}"></td>
             <td th:if="${a.isPermanent}">
               Permanent
             </td>

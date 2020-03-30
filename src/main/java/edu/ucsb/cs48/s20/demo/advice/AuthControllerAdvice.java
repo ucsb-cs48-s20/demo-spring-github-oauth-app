@@ -28,32 +28,19 @@ public class AuthControllerAdvice {
         return token != null;
     }
 
-    @ModelAttribute("fname")
-    public String getFirstName(OAuth2AuthenticationToken token){
-        return membershipService.firstName(token);
-    }
-
-    @ModelAttribute("lname")
-    public String getLastName(OAuth2AuthenticationToken token){
-        return membershipService.lastName(token);
-    }
-
-    @ModelAttribute("name")
-    public String getName(OAuth2AuthenticationToken token){
-        return membershipService.name(token);
-    }
-
-    @ModelAttribute("email")
-    public String getEmail(OAuth2AuthenticationToken token){
-        return membershipService.email(token);
-    }
-
-    @ModelAttribute("picture")
-    public String getPicture(OAuth2AuthenticationToken token){
+    @ModelAttribute("id")
+    public String getUid(OAuth2AuthenticationToken token){
         if (token == null) return "";
-        return token.getPrincipal().getAttributes().get("picture").toString();
+        return token.getPrincipal().getAttributes().get("id").toString();
     }
 
+    @ModelAttribute("login")
+    public String getLogin(OAuth2AuthenticationToken token){
+        if (token == null) return "";
+        return token.getPrincipal().getAttributes().get("login").toString();
+    }
+
+  
     @ModelAttribute("isMember")
     public boolean getIsMember(OAuth2AuthenticationToken token){
         return membershipService.isMember(token);
@@ -72,16 +59,16 @@ public class AuthControllerAdvice {
     private void updateLoginTable(OAuth2AuthenticationToken token) {
         if (token==null) return;
         
-        String email = membershipService.email(token);
-        if (email == null) return;
+        String login = membershipService.login(token);
+        if (login == null) return;
 
-        List<AppUser> appUsers = appUserRepository.findByEmail(email);
+        List<AppUser> appUsers = appUserRepository.findByLogin(login);
 
         if (appUsers.size()==0) {
             // No user with this email is in the AppUsers table yet, so add one
             AppUser u = new AppUser();
-            u.setEmail(email);
-            u.setName(membershipService.name(token));
+            u.setLogin(login);
+            u.setUid(membershipService.uid(token));
             appUserRepository.save(u);
         }
     }
