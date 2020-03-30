@@ -284,7 +284,7 @@
 			<id>heroku</id>
 			<activation>
 				<property>
-					<name>env.HEROKU_PROPERTIES</name>
+					<name>env.PRODUCTION_PROPERTIES</name>
 				</property>
 			</activation>
 			<dependencies>
@@ -299,7 +299,7 @@
 				</dependency>
 			</dependencies>
 			<properties>
-				<environment-properties>${env.HEROKU_PROPERTIES}</environment-properties>
+				<environment-properties>${env.PRODUCTION_PROPERTIES}</environment-properties>
 			</properties>
 		</profile>
 	</profiles>
