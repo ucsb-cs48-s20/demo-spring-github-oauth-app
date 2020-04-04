@@ -22,6 +22,8 @@ import com.jcabi.github.wire.RetryCarefulWire;
 import com.jcabi.http.Request;
 import com.jcabi.http.response.JsonResponse;
 
+import edu.ucsb.cs48.s20.demo.repositories.AdminRepository;
+
 /**
  * Service object that wraps the UCSB Academic Curriculum API
  */
@@ -41,6 +43,9 @@ public class GithubOrgMembershipService implements MembershipService {
 
     @Autowired
     private OAuth2AuthorizedClientService clientService;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     public GithubOrgMembershipService(@Value("${app.github_org}") String githubOrg) {
         this.githubOrg = githubOrg;
@@ -100,21 +105,11 @@ public class GithubOrgMembershipService implements MembershipService {
         }
 
         try {
-
             // I forget why we have Github wrapped like this
             // TODO: find the tutorial that explains it
             // I think it has something to do with respecting rate limits
             github = new RtGithub(new RtGithub(accessToken).entry()
                     .through(RetryCarefulWire.class, 50));
-
-            // logger.info("github=" + github);
-            // User ghuser = github.users().get(user);
-            // logger.info("ghuser=" + ghuser);
-            // JsonResponse jruser = github.entry().uri().path("/user").back().method(Request.GET).fetch()
-            //         .as(JsonResponse.class);
-            // logger.info("jruser =" + jruser);
-            // Organization org = github.organizations().get(githubOrg);
-            // logger.info("org =" + org);
 
             String path = String.format("/user/memberships/orgs/%s",githubOrg);
 
@@ -130,7 +125,18 @@ public class GithubOrgMembershipService implements MembershipService {
             logger.info("roleToTest =" + roleToTest);
             logger.info("state =" + state);
 
-            return actualRole.equals(roleToTest);
+            // A user is an admin if their username is listed in the "app.admin.logins" property or if their username 
+            // is listed in the Admins repository. It does NOT look at GitHub org memberhsip.
+            if(roleToTest.equals("admin") && isAdminLogin(user)) {
+                return true;
+            }
+
+            // A user is a member if they are a member or an admin of the linked GitHub organization.
+            if(roleToTest.equals("member") && (actualRole.equals("member") || actualRole.equals("admin"))) {
+                return true;
+            }
+
+            return false;
         } catch (Exception e) {
             logger.error("Exception happened while trying to determine membership in github org");
             logger.error("Exception",e);
@@ -138,6 +144,9 @@ public class GithubOrgMembershipService implements MembershipService {
         return false;
     }
 
+    public boolean isAdminLogin(String login) {
+        return !adminRepository.findByLogin(login).isEmpty() || adminLogins.contains(login);
+    }
 
     public String login(OAuth2AuthenticationToken token) {
         if (token == null)
